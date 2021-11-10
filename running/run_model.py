@@ -1,5 +1,5 @@
 import sys
-sys.path.append('.')
+sys.path.append('/content/ICLR20-Great')
 
 import argparse
 import yaml
