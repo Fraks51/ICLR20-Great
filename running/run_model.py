@@ -37,6 +37,7 @@ def test(data, config, model_path, log_path):
 	tracker.restore(best_model=True)
 	evaluate(data, config, model, is_heldout=False)
 
+
 def train(data, config, model_path=None, log_path=None):
 	model = VarMisuseModel(config['model'], data.vocabulary.vocab_dim)
 	model.run_dummy_input()
