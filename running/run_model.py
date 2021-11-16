@@ -122,8 +122,9 @@ def evaluate(data, config, model, is_heldout=True):  # Similar to train, just wi
 			avg_accs = ["{0:.2%}".format(a.result().numpy()) for a in accs]
 			print("Testing progress: MB: {0}, seqs: {1:,}, tokens: {2:,}, loss: {3}, accs: {4}".format(mbs, counts[0].result().numpy(), counts[1].result().numpy(), ", ".join(avg_losses), ", ".join(avg_accs)))
 
+	accs_names = ["bug_free", "bug_loc", "target_loc", "joint&repair"]
 	avg_accs = [a.result().numpy() for a in accs]
-	avg_accs_str = ", ".join(["{0:.2%}".format(a) for a in avg_accs])
+	avg_accs_str = ", ".join(["{1}: {0:.2%}".format(a, name) for a, name in zip(avg_accs, accs_names)])
 	avg_loss_str = ", ".join(["{0:.3f}".format(l.result().numpy()) for l in losses])
 	print("Evaluation result: seqs: {0:,}, tokens: {1:,}, loss: {2}, accs: {3}".format(counts[0].result().numpy(), counts[1].result().numpy(), avg_loss_str, avg_accs_str))
 	return avg_accs
