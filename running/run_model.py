@@ -19,24 +19,26 @@ def main():
     ap.add_argument("data_path", help="Path to data root")
     ap.add_argument("vocabulary_path", help="Path to vocabulary file")
     ap.add_argument("config", help="Path to config file")
+    ap.add_argument("code_repr_type", help="Code representation type for code. [BPE, single]")
     ap.add_argument("-m", "--models", help="Directory to store trained models (optional)")
     ap.add_argument("-l", "--log", help="Path to store training log (optional)")
     ap.add_argument("-e", "--eval_only", help="Whether to run just the final model evaluation")
     args = ap.parse_args()
 
+    config = yaml.safe_load(open(args.config))
+
     wandb.login()
     wandb.init(
         project="ICLR20-Great-code-repr",
         config={
-            "code_repr": "BPE",
+            "code_repr": config["code_repr_type"],
             "architecture": "Great",
             "dataset": "VarMisuseModel"
         }
     )
-
-    config = yaml.safe_load(open(args.config))
     print("Training with configuration:", config)
-    data = data_loader.DataLoader(args.data_path, config["data"], vocabulary.Vocabulary(args.vocabulary_path))
+    data = data_loader.DataLoader(args.data_path, config["data"],
+                                  vocabulary.Vocabulary(args.vocabulary_path, config["code_repr_type"]))
     if args.eval_only:
         if args.models is None or args.log is None:
             raise ValueError("Must provide a path to pre-trained models when running final evaluation")

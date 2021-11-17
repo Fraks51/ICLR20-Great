@@ -5,9 +5,11 @@ import json
 
 import tensorflow as tf
 
+
 class Vocabulary():
-	def __init__(self, vocab_path):
+	def __init__(self, vocab_path, code_mode):
 		self.vocab_path = vocab_path
+		self.code_mode = code_mode
 		self.load_vocab()
 	
 	def load_vocab(self):
@@ -27,8 +29,13 @@ class Vocabulary():
 			self.bpe_lookup_dict[token[:2]].add(token)
 	
 	def translate(self, token, is_subtokenized=False):
-		return self.lookup(token) if is_subtokenized else [self.lookup(t) for t in self.tokenize(token)]
-	
+		if self.code_mode == "single":
+			return [self.lookup(t) for t in token.split()]
+		elif self.code_mode == "BPE":
+			return self.lookup(token) if is_subtokenized else [self.lookup(t) for t in self.tokenize(token)]
+		else:
+			raise ValueError("Unsupported mode of code representation.")
+
 	def lookup(self, token):
 		return self.w2i[token] if token in self.w2i else self.w2i["<PAD>"]  # Ignore truly unknown tokens; only happens when specific characters were never seen in training data.
 	
