@@ -152,7 +152,7 @@ def evaluate(data, config, model, is_heldout=True):  # Similar to train, just wi
     print("Evaluation result: seqs: {0:,}, tokens: {1:,}, loss: {2}, accs: {3}".format(counts[0].result().numpy(),
                                                                                        counts[1].result().numpy(),
                                                                                        avg_loss_str, avg_accs_str))
-    wandb.login({"bug_free_accuracy": avg_accs[0],
+    wandb.log({"bug_free_accuracy": avg_accs[0],
                  "bug_loc_accuracy": avg_accs[1],
                  "target_loc_accuracy": avg_accs[2],
                  "joint&repair_accuracy": avg_accs[3]})
