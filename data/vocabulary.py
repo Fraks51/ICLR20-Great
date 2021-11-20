@@ -30,6 +30,7 @@ class Vocabulary():
 	
 	def translate(self, token, is_subtokenized=False):
 		if self.code_mode == "single":
+			token = token.replace("\n", " ")
 			return [self.lookup(t) for t in token.split()]
 		elif self.code_mode == "BPE":
 			return self.lookup(token) if is_subtokenized else [self.lookup(t) for t in self.tokenize(token)]
