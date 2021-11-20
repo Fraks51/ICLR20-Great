@@ -29,7 +29,7 @@ def main():
 
     wandb.login()
     wandb.init(
-        project="ICLR20-Great-code-repr",
+        project="ICLR20-Great-code-repr-v2",
         config={
             "code_repr": config["code_repr_type"],
             "architecture": "Great",
