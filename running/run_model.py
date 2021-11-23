@@ -29,16 +29,16 @@ def main():
 
     wandb.login()
     wandb.init(
-        project="ICLR20-Great-code-repr",
+        project="ICLR20-Great-code-repr-v2",
         config={
-            "code_repr": config["code_repr_type"],
+            "code_repr": args.code_repr_type,
             "architecture": "Great",
             "dataset": "VarMisuseModel"
         }
     )
     print("Training with configuration:", config)
     data = data_loader.DataLoader(args.data_path, config["data"],
-                                  vocabulary.Vocabulary(args.vocabulary_path, config["code_repr_type"]))
+                                  vocabulary.Vocabulary(args.vocabulary_path, args.code_repr_type))
     if args.eval_only:
         if args.models is None or args.log is None:
             raise ValueError("Must provide a path to pre-trained models when running final evaluation")
