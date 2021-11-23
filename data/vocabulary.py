@@ -17,7 +17,7 @@ class Vocabulary():
 			subtokens = [l.rstrip() for l in f]
 		self.i2w = {ix+1:w for ix, w in enumerate(subtokens)}
 		self.i2w[0] = "<PAD>"
-		self.w2i = {w:ix for ix, w in self.i2w.items()}
+		self.w2i = {w: ix for ix, w in self.i2w.items()}
 		self.vocab_dim = len(self.i2w)
 		
 		# Some data structures to split up sub-tokenization
@@ -30,7 +30,8 @@ class Vocabulary():
 	
 	def translate(self, token, is_subtokenized=False):
 		if self.code_mode == "single":
-			token = token.replace("\n", " ")
+			tokens = "".join(filter(lambda x: x not in "\n\r`\'", tokens))
+			tokens = tokens.replace("_", " ")
 			return [self.lookup(t) for t in token.split()]
 		elif self.code_mode == "BPE":
 			return self.lookup(token) if is_subtokenized else [self.lookup(t) for t in self.tokenize(token)]
