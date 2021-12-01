@@ -26,7 +26,12 @@ class AttentionLayer(tf.keras.layers.Layer):
 			self.bias_embs = self.add_weight(name='e1', shape=(self.bias_dim, self.attention_dim_per_head), initializer='glorot_uniform')
 			self.bias_scalar = self.add_weight(name='e2', shape=(self.attention_dim_per_head, 1), initializer='glorot_uniform')
 	
-	@tf.function(input_signature=[tf.TensorSpec(shape=(None, None, None), dtype=tf.float32), tf.TensorSpec(shape=(None, None, None), dtype=tf.float32), tf.TensorSpec(shape=(None, None, None, None), dtype=tf.float32), tf.TensorSpec(shape=(None, 4), dtype=tf.int32)])
+	@tf.function(input_signature=[
+		tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),
+		tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),
+		tf.TensorSpec(shape=(None, None, None, None), dtype=tf.float32),
+		tf.TensorSpec(shape=(None, 4), dtype=tf.int32)
+	])
 	def call(self, states, key_states, masks, attention_bias):
 		# Compute key, query and value vectors, reshaped to [Batch, Heads, Time, Dim] where Dim is attention_dim//num_heads.
 		query, keys, values = self.compute_qkv(states, key_states)
@@ -34,7 +39,7 @@ class AttentionLayer(tf.keras.layers.Layer):
 		# Compute attention weights, and context from these.
 		alpha = self.get_attention_weights(query, keys, masks, attention_bias)
 		
-		# Compute weigthed context and project out.
+		# Compute weighed context and project out.
 		context = tf.einsum('bhqk,bkha->bqha', alpha, values)
 		context = tf.einsum('btha,had->btd', context, self.weight_out)
 		return context
@@ -76,6 +81,7 @@ class AttentionLayer(tf.keras.layers.Layer):
 		alpha *= masks
 		return alpha
 
+
 class LayerNormalization(tf.keras.layers.Layer):
 	def __init__(self, hidden_dim):
 		super(LayerNormalization, self).__init__()
@@ -92,11 +98,16 @@ class LayerNormalization(tf.keras.layers.Layer):
 		norm_x = (x - mean) * tf.math.rsqrt(variance + epsilon)
 		return norm_x * self.scale + self.bias
 
+
 class Transformer(tf.keras.layers.Layer):
-	"""Transformer language model: converts indices into hidden states through layers of multi-headed attention and feed-forward dense layers.
+	"""
+	Transformer language model: converts indices into hidden states through layers of multi-headed attention
+	and feed-forward dense layers.
 	
-		Augments a generic Transformer with attentional bias, if bias_dim is provided. See documentation on AttentionLayer for more details.
-		To generate language from the resulting states, pass the states to the 'predict' function. Note that it assumes that the input vocabulary is output vocabulary (i.e., it reuses the model's embedding table).
+	Augments a generic Transformer with attentional bias, if bias_dim is provided. See documentation on AttentionLayer
+	for more details.
+	To generate language from the resulting states, pass the states to the 'predict' function. Note that it assumes
+	that the input vocabulary is output vocabulary (i.e., it reuses the model's embedding table).
 	"""
 	NOOP_BIAS = tf.zeros((0, 4), 'int32')
 	
@@ -139,9 +150,15 @@ class Transformer(tf.keras.layers.Layer):
 		self.ff_2 = [tf.keras.layers.Dense(self.hidden_dim) for _ in range(self.num_layers)]
 	
 	# Default 'call' applies standard self-attention, with dropout if training=True.
-	@tf.function(input_signature=[tf.TensorSpec(shape=(None, None, None), dtype=tf.float32), tf.TensorSpec(shape=(None, None, None, None), dtype=tf.float32), tf.TensorSpec(shape=(None, 4), dtype=tf.int32), tf.TensorSpec(shape=(), dtype=tf.bool)])
+	@tf.function(input_signature=[
+		tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),
+		tf.TensorSpec(shape=(None, None, None, None), dtype=tf.float32),
+		tf.TensorSpec(shape=(None, 4), dtype=tf.int32),
+		tf.TensorSpec(shape=(), dtype=tf.bool)
+	])
 	def call(self, states, masks, attention_bias, training):
-		real_dropout_rate = self.dropout_rate * tf.cast(training, 'float32')  # Easier for distributed training than an explicit conditional
+		real_dropout_rate = self.dropout_rate * tf.cast(training, 'float32')
+		# Easier for distributed training than an explicit conditional
 		for ix in range(self.num_layers):
 			new_states = self.ln[ix][0](states)
 			new_states = self.attention[ix](new_states, new_states, masks, attention_bias)
@@ -183,7 +200,8 @@ class Transformer(tf.keras.layers.Layer):
 	def predict(self, states):
 		return tf.matmul(states, self.embed, transpose_b=True)
 	
-	# Convenience function: returns a sequence mask in which each token can only see states up to its own position. Useful for generative language modeling (e.g. decoding).
+	# Convenience function: returns a sequence mask in which each token can only see states up to its own position.
+	# Useful for generative language modeling (e.g. decoding).
 	@tf.function
 	def get_sequence_mask(self, seq_len):
 		return tf.sequence_mask(lengths=tf.range(1, seq_len + 1), maxlen=seq_len, dtype=tf.float32)

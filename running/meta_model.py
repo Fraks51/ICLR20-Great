@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from models import great_transformer, ggnn, rnn, util
 
+
 class VarMisuseModel(tf.keras.layers.Layer):
 	def __init__(self, config, vocab_dim):
 		super(VarMisuseModel, self).__init__()
@@ -36,16 +37,24 @@ class VarMisuseModel(tf.keras.layers.Layer):
 			else:
 				raise ValueError('Unknown model component provided:', kind)
 	
-	@tf.function(input_signature=[tf.TensorSpec(shape=(None, None, None), dtype=tf.int32), tf.TensorSpec(shape=(None, None), dtype=tf.int32), tf.TensorSpec(shape=(None, 4), dtype=tf.int32), tf.TensorSpec(shape=(), dtype=tf.bool)])
+	@tf.function(input_signature=[
+		tf.TensorSpec(shape=(None, None, None), dtype=tf.int32),
+		tf.TensorSpec(shape=(None, None), dtype=tf.int32),
+		tf.TensorSpec(shape=(None, 4), dtype=tf.int32),
+		tf.TensorSpec(shape=(), dtype=tf.bool)
+	])
 	def call(self, tokens, token_mask, edges, training):
 		# Embed subtokens and average into token-level embeddings, masking out invalid locations
 		subtoken_embeddings = tf.nn.embedding_lookup(self.embed, tokens)
 		subtoken_embeddings *= tf.expand_dims(tf.cast(tf.clip_by_value(tokens, 0, 1), dtype='float32'), -1)
 		states = tf.reduce_mean(subtoken_embeddings, 2)
 		
-		# Track whether any position-aware model processes the states first. If not, add positional encoding to ensure that e.g. GREAT and GGNN
-		# have sequential awareness. This is especially (but not solely) important because the default, non-buggy 'location' is the 0th token,
-		# which is hard to predict for e.g. Transformers and GGNNs without either sequential awareness or a special marker at that location.
+		# Track whether any position-aware model processes the states first. If not, add positional encoding
+		# to ensure that e.g. GREAT and GGNN
+		# have sequential awareness. This is especially (but not solely) important because the default,
+		# non-buggy 'location' is the 0th token,
+		# which is hard to predict for e.g. Transformers and GGNNs without either sequential awareness or
+		# a special marker at that location.
 		if not self.stack or not isinstance(self.stack[0], rnn.RNN):
 			states += self.pos_enc[:tf.shape(states)[1]]
 		
@@ -55,11 +64,13 @@ class VarMisuseModel(tf.keras.layers.Layer):
 				states = model(states, training=training)
 			elif isinstance(model, ggnn.GGNN):  # For GGNNs, pass edges as-is
 				states = model(states, edges, training=training)
-			elif isinstance(model, great_transformer.Transformer):  # For Transformers, reverse edge directions to match query-key direction and add attention mask.
+			elif isinstance(model, great_transformer.Transformer):
+				# For Transformers, reverse edge directions to match query-key direction and add attention mask.
 				mask = tf.cast(token_mask, dtype='float32')
 				mask = tf.expand_dims(tf.expand_dims(mask, 1), 1)
 				attention_bias = tf.stack([edges[:, 0], edges[:, 1], edges[:, 3], edges[:, 2]], axis=1)
-				states = model(states, mask, attention_bias, training=training)  # Note that plain transformers will simply ignore the attention_bias.
+				states = model(states, mask, attention_bias, training=training)
+				# Note that plain transformers will simply ignore the attention_bias.
 			else:
 				raise ValueError('Model not yet supported:', model)
 		
