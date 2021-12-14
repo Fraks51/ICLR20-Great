@@ -30,7 +30,7 @@ def main():
 
     wandb.login()
     wandb.init(
-        project=f"ICLR20-Great-code-repr-{config['model']}",
+        project="ICLR20-Great-code-repr-rnn",
         config={
             "code_repr": args.code_repr_type,
             "architecture": "Great",
