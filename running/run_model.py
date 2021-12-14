@@ -30,12 +30,13 @@ def main():
 
     wandb.login()
     wandb.init(
-        project="ICLR20-Great-code-repr-v2",
+        project=f"ICLR20-Great-code-repr-{config['model']}",
         config={
             "code_repr": args.code_repr_type,
             "architecture": "Great",
             "dataset": "VarMisuseModel"
-        }
+        },
+        resume="allow"
     )
     print("Training with configuration:", config)
     data = data_loader.DataLoader(args.data_path, config["data"],
