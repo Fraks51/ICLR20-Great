@@ -1,6 +1,7 @@
 import sys
 
 sys.path.append('/content/ICLR20-Great')
+sys.path.append('../ICLR20-Great')
 
 import wandb
 import argparse
