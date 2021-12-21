@@ -20,7 +20,7 @@ def main():
     ap.add_argument("data_path", help="Path to data root")
     ap.add_argument("vocabulary_path", help="Path to vocabulary file")
     ap.add_argument("config", help="Path to config file")
-    ap.add_argument("code_repr_type", help="Code representation type for code. [BPE, single, both (debug mode)]")
+    ap.add_argument("code_repr_type", help="Code representation type for code. [BPE, single, ULM]")
     ap.add_argument("-m", "--models", help="Directory to store trained models (optional)")
     ap.add_argument("-l", "--log", help="Path to store training log (optional)")
     ap.add_argument("-e", "--eval_only", help="Whether to run just the final model evaluation")
