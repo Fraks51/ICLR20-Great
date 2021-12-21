@@ -4,6 +4,7 @@ import random
 import json
 
 import tensorflow as tf
+import sentencepiece as spm
 
 
 class Vocabulary():
@@ -13,20 +14,23 @@ class Vocabulary():
 		self.load_vocab()
 	
 	def load_vocab(self):
-		with open(self.vocab_path, encoding='utf-8') as f:
-			subtokens = [l.rstrip() for l in f]
-		self.i2w = {ix+1:w for ix, w in enumerate(subtokens)}
-		self.i2w[0] = "<PAD>"
-		self.w2i = {w: ix for ix, w in self.i2w.items()}
-		self.vocab_dim = len(self.i2w)
-		
-		# Some data structures to split up sub-tokenization
-		self.bpe_cache = {}
-		self.bpe_lookup_dict = {}
-		for token in self.w2i.keys():
-			if token[:2] not in self.bpe_lookup_dict:
-				self.bpe_lookup_dict[token[:2]] = set()
-			self.bpe_lookup_dict[token[:2]].add(token)
+		if self.code_mode == "ULM":
+			self.sentence_piece = spm.SentencePieceProcessor(model_file=self.vocab_path)
+		else:
+			with open(self.vocab_path, encoding='utf-8') as f:
+				subtokens = [l.rstrip() for l in f]
+			self.i2w = {ix+1:w for ix, w in enumerate(subtokens)}
+			self.i2w[0] = "<PAD>"
+			self.w2i = {w: ix for ix, w in self.i2w.items()}
+			self.vocab_dim = len(self.i2w)
+
+			# Some data structures to split up sub-tokenization
+			self.bpe_cache = {}
+			self.bpe_lookup_dict = {}
+			for token in self.w2i.keys():
+				if token[:2] not in self.bpe_lookup_dict:
+					self.bpe_lookup_dict[token[:2]] = set()
+				self.bpe_lookup_dict[token[:2]].add(token)
 	
 	def translate(self, token, is_subtokenized=False):
 		if self.code_mode == "single":
@@ -35,6 +39,8 @@ class Vocabulary():
 			return [self.lookup(t) for t in tokens.split()]
 		elif self.code_mode == "BPE":
 			return self.lookup(token) if is_subtokenized else [self.lookup(t) for t in self.tokenize(token)]
+		elif self.code_mode == "ULM":
+			return self.sentence_piece.encode_as_ids(token)
 		else:
 			raise ValueError("Unsupported mode of code representation.")
 

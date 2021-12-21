@@ -22,7 +22,8 @@ EDGE_TYPES = {
 	'enum_CALLS': 10
 }
 
-class DataLoader():
+
+class DataLoader:
 	
 	def __init__(self, data_path, data_config, vocabulary):
 		self.data_path = data_path
