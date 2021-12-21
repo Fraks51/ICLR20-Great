@@ -19,7 +19,7 @@ class Vocabulary():
 	def load_vocab(self):
 		if self.code_mode == "ULM":
 			self.sentence_piece = spm.SentencePieceProcessor(model_file=self.ulm_model)
-			self.vocab_path = sum(1 for _ in open(self.vocab_path, 'r')) + 1
+			self.vocab_dim = sum(1 for _ in open(self.vocab_path, 'r')) + 1
 		else:
 			with open(self.vocab_path, encoding='utf-8') as f:
 				subtokens = [l.rstrip() for l in f]
