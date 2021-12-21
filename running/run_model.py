@@ -24,6 +24,7 @@ def main():
     ap.add_argument("-m", "--models", help="Directory to store trained models (optional)")
     ap.add_argument("-l", "--log", help="Path to store training log (optional)")
     ap.add_argument("-e", "--eval_only", help="Whether to run just the final model evaluation")
+    ap.add_argument("-u", "--ulm", help="Path to ULM model file")
     args = ap.parse_args()
 
     config = yaml.safe_load(open(args.config))
@@ -40,7 +41,7 @@ def main():
     )
     print("Training with configuration:", config)
     data = data_loader.DataLoader(args.data_path, config["data"],
-                                  vocabulary.Vocabulary(args.vocabulary_path, args.code_repr_type))
+                                  vocabulary.Vocabulary(args.vocabulary_path, args.code_repr_type, ulm_model=args.ulm))
     if args.eval_only:
         if args.models is None or args.log is None:
             raise ValueError("Must provide a path to pre-trained models when running final evaluation")

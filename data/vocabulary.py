@@ -8,14 +8,18 @@ import sentencepiece as spm
 
 
 class Vocabulary():
-	def __init__(self, vocab_path, code_mode):
+	def __init__(self, vocab_path, code_mode, ulm_model=None):
 		self.vocab_path = vocab_path
 		self.code_mode = code_mode
+		if ulm_model is None and code_mode == "ULM":
+			raise ValueError("Need to define --ulm for using ULM code representation")
+		self.ulm_model = ulm_model
 		self.load_vocab()
 	
 	def load_vocab(self):
 		if self.code_mode == "ULM":
-			self.sentence_piece = spm.SentencePieceProcessor(model_file=self.vocab_path)
+			self.sentence_piece = spm.SentencePieceProcessor(model_file=self.ulm_model)
+			self.vocab_path = sum(1 for _ in open(self.vocab_path, 'r')) + 1
 		else:
 			with open(self.vocab_path, encoding='utf-8') as f:
 				subtokens = [l.rstrip() for l in f]
