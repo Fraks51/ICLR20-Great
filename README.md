@@ -82,3 +82,13 @@ The following results and variables should be reported for each run:
 - The highest *joint localization & repair* accuracy reached in 100 steps (the key metric) on the full 'eval' dataset, using the model that performed highest in this metric on the heldout data at training time. For completeness, please also report the corresponding no-bug prediction accuracy (indicates false alarm rate), bug localization accuracy, and bug repair accuracy (between parentheses).
 - *Details pertaining to the run*: the specific step at which that accuracy was achieved, the time taken per step, and the total number of parameters used by the model (printed at the start of training).
 - The *hyper-parameters for this model*: at least, the maximum batch size in terms of total tokens (batchers are grouped by similar sample size for efficiency -- users are encouraged to use the default (12,500) for comparability), the learning rate, and any details pertaining to the model architecture (new innovations, with paper, are encouraged!) and its dimensions.
+
+## Token representation research
+
+### Dataset
+
+### Tokenization methods
+
+### Code
+
+### Results
