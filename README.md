@@ -114,3 +114,6 @@ Alse was added [wandb](https://wandb.ai/site) in `running/run_model.py` for draw
 `python run_model.py {Path to dataset} m.vocab config.yml ULM -m model -l logs -u m.model`
 
 ### Results
+
+![Joint Location&Repair accuracy](JointAcc.png)
+
