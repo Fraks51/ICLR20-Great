@@ -85,6 +85,8 @@ The following results and variables should be reported for each run:
 
 ## Token representation research
 
+Main goal of research was comparison of different tokenization methods of code in terms of performance for the model solving the code related problem.
+
 ### Dataset
 
 [Dataset](https://github.com/Fraks51/great) for this experiments was redused by half to training model on low memory GPU.
