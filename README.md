@@ -87,7 +87,7 @@ The following results and variables should be reported for each run:
 
 ### Dataset
 
-[Dataset](https://github.com/google-research-datasets/great) for this experiments was redused by half to training model on low memory GPU.
+[Dataset](https://github.com/Fraks51/great) for this experiments was redused by half to training model on low memory GPU.
 
 ### Tokenization methods
 
