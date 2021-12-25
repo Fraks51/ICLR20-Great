@@ -17,7 +17,7 @@ To run training, first clone the [data repository](https://github.com/google-res
 
 To customize the model configuration, you can change both the hyper-parameters for the various model types available (transformer, GREAT, GGNN, RNN) in `config.yml`, and the overall model architecture itself under `model: configuration`. For instance, to train the RNN Sandwich architecture from our paper, set the RNN and GGNN layers to reasonable values (e.g. RNN to  2 layers and the GGNN's `time_steps` to \[3, 1\] layers as in the paper) and specify the model configuration: `rnn ggnn rnn ggnn rnn`.
 
-To evaluate the trained model with the highest heldout accuracy, run: `python running/run_model.py *data_dir* vocab.txt config.yml -m *model_path* -l *log_path* -e True` (`model_path` and `log_path` are mandatory in this setting). This will run an evaluation pass on the entire 'eval' portion of the dataset and print the final losses and accuracies.
+To evaluate the trained model with the highest heldout accuracy, run: `python running/run_model.py *data_dir* vocab.txt config.yml BPE -m *model_path* -l *log_path* -e True` (`model_path` and `log_path` are mandatory in this setting). This will run an evaluation pass on the entire 'eval' portion of the dataset and print the final losses and accuracies.
 
 ## Data
 The data for this project consists of up to three bugs per function for every function in the re-releasable subset of the Py150 corpus, paired with the original, non-buggy code. This data is now publicly available from [https://github.com/google-research-datasets/great](https://github.com/google-research-datasets/great).
@@ -96,5 +96,21 @@ The following results and variables should be reported for each run:
 - *Unigram language model (ULM) [Kudo.](https://arxiv.org/abs/1804.10959)*. This subword tokenization method used from [SentencePiece](https://github.com/google/sentencepiece). By [this](https://github.com/Fraks51/great/blob/master/sec_piece.py) code was made `m.model` and `m.vocab`.
 
 ### Code
+
+The main code contains in `data/vocabulary.py`.
+
+Alse was added [wandb](https://wandb.ai/site) in `running/run_model.py` for drawing plots.
+
+- To start model on BPE mode:
+  
+`python run_model.py {Path to dataset} vocab.txt config.yml BPE -m model -l logs`
+  
+- To start model on Single tokenization mode:
+
+`python run_model.py {Path to dataset} single_tokens_vocab.txt config.yml single -m model -l logs`
+  
+- To start model on ULM mode:
+
+`python run_model.py {Path to dataset} m.vocab config.yml ULM -m model -l logs -u m.model`
 
 ### Results
