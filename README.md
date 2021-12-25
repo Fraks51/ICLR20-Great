@@ -91,6 +91,10 @@ The following results and variables should be reported for each run:
 
 ### Tokenization methods
 
+- *Single tokenizetion*. Simple tokenization method in which we take whole token. To save memory only tokens that occur more than 20 times have been added to the vocabulary by [code](https://github.com/Fraks51/great/blob/master/make_vocab.py). 
+- *Byte-pair-encoding (BPE) [Sennrich et al.](http://www.aclweb.org/anthology/P16-1162)*. This subword tokenization method is default for this model.
+- *Unigram language model (ULM) [Kudo.](https://arxiv.org/abs/1804.10959)*. This subword tokenization method used from [SentencePiece](https://github.com/google/sentencepiece). By [this](https://github.com/Fraks51/great/blob/master/sec_piece.py) code was made `m.model` and `m.vocab`.
+
 ### Code
 
 ### Results
